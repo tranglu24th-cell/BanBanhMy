@@ -1,0 +1,120 @@
+﻿@{
+    ViewData["Title"] = "Cửa hàng bánh ngọt";
+    Layout = "~/Views/Shared/_Site.cshtml";
+    var categories = ViewBag.Categories as List<Core.Database.Models.Category>;
+}
+
+<div class="container-fluid bg-light py-6 my-6 mt-0">
+    <div class="container text-center animated bounceInDown">
+        <h1 class="display-1 mb-4">Cửa Hàng</h1>
+    </div>
+</div>
+
+<div class="container py-5">
+    <div class="d-flex justify-content-center flex-wrap mb-5">
+        <button class="btn btn-outline-primary mx-2 my-1 btn-category-filter active" data-id="">Tất cả</button>
+        @if (categories != null)
+        {
+            foreach (var cat in categories)
+            {
+                <button class="btn btn-outline-primary mx-2 my-1 btn-category-filter" data-id="@cat.Id">@cat.Name</button>
+            }
+        }
+    </div>
+
+    <div id="product-list-container">
+        <div class="text-center my-5 loading-spinner">
+            <div class="spinner-border text-primary" role="status"></div>
+            <p class="mt-2 text-muted">Đang nạp danh sách bánh...</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        function filterProductsByCategoryId(catId) {
+            $(".loading-spinner").show();
+
+            let filterData = {
+                CategoryId: catId ? catId : null
+            };
+
+            $.ajax({
+                url: '/Product/FilterProducts',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(filterData),
+                success: function (response) {
+                    $(".loading-spinner").hide();
+                    // Đập HTML mới vào trang Cửa hàng
+                    $("#product-list-container").html(response);
+                    // Hiệu ứng phóng to ảnh sẽ do Layout tự động kích hoạt lại ngầm
+                },
+                error: function () {
+                    $(".loading-spinner").hide();
+                    alert("Lỗi kết nối máy chủ dữ liệu.");
+                }
+            });
+        }
+
+        $(document).on('click', '.btn-category-filter', function (e) {
+            e.preventDefault();
+            $(".btn-category-filter").removeClass("active");
+            $(this).addClass("active");
+
+            let categoryId = $(this).data('id');
+            filterProductsByCategoryId(categoryId);
+        });
+
+        // Tự động load toàn bộ sản phẩm lần đầu
+        filterProductsByCategoryId("");
+    });
+
+
+</script>
+@section Css {
+    <link href="/plugins/toastr/toastr.min.css" rel="stylesheet" />
+}
+@section Js {
+    <script src="/plugins/toastr/toastr.min.js"></script>
+    <script>
+        // Khai báo trực tiếp hàm ở đây để đảm bảo trang luôn tìm thấy nó
+        function updateNavbarCartCount(count) {
+            var badge = $('#navCartCount');
+            if (badge.length > 0) {
+                badge.text(count);
+            }
+        }
+
+        $(document).ready(function () {
+            $(document).on('click', '.btn-add-cart', function (e) {
+                e.preventDefault();
+                let productId = $(this).data('id');
+                let btn = $(this);
+                $.ajax({
+                    url: '/Cart/AddToCart',
+                    type: 'POST',
+                    // Sửa tên biến từ amount sang quantity cho khớp chính xác với CartController
+                    data: { productId: productId, quantity: 1 },
+                    beforeSend: function () {
+                        btn.prop('disabled', true);
+                    },
+                    success: function (res) {
+                        if (res.success) {
+                            toastr.success(res.message);
+                            updateNavbarCartCount(res.cartCount);
+                        } else {
+                            toastr.error(res.message);
+                        }
+                    },
+                    error: function () {
+                        toastr.error('Lỗi: Không thể thêm sản phẩm vào giỏ hàng.');
+                    },
+                    complete: function () {
+                        btn.prop('disabled', false);
+                    }
+                });
+            });
+        });
+    </script>
+}

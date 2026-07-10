@@ -1,0 +1,108 @@
+﻿@model Core.Database.Models.Order
+@{
+    ViewData["Title"] = "Đặt hàng thành công";
+    Layout = "~/Views/Shared/_Site.cshtml";
+}
+
+<div class="container-fluid bg-light py-6 my-6 mt-0">
+    <div class="container text-center animated bounceInDown">
+        <h1 class="display-1 mb-4">Thành Công</h1>
+    </div>
+</div>
+
+<div class="container py-5">
+    <div class="alert alert-success text-center p-4 rounded-lg mb-5 shadow-sm">
+        <h3 class="font-weight-bold text-success mb-2">
+            <i class="fas fa-check-circle mr-2"></i>Đặt hàng thành công!
+        </h3>
+        <p class="text-muted mb-2">Cảm ơn bạn đã mua sắm tại cửa hàng của chúng tôi.</p>
+        <h5 class="mb-0 text-dark">Mã đơn hàng của bạn là: <strong class="text-danger">#@Model.Id</strong></h5>
+    </div>
+
+    <div class="card shadow-sm border-0 mb-5">
+        <div class="card-header bg-primary text-white py-3">
+            <h5 class="card-title mb-0"><i class="fas fa-file-invoice mr-2"></i> Thông tin giao hàng</h5>
+        </div>
+        <div class="card-body p-4 fs-5">
+            <div class="row mb-2">
+                <div class="col-sm-3 font-weight-bold">Người nhận hàng:</div>
+                <div class="col-sm-9 text-dark font-weight-bold">@(Model.Customer?.Name ?? "Khách vãng lai")</div>
+            </div>
+            <div class="row mb-2">
+                <div class="col-sm-3 font-weight-bold">Số điện thoại:</div>
+                <div class="col-sm-9">@(Model.Customer?.Phone ?? "Chưa cung cấp")</div>
+            </div>
+            <div class="row mb-2">
+                <div class="col-sm-3 font-weight-bold">Địa chỉ giao:</div>
+                <div class="col-sm-9 text-muted">@(Model.Customer?.Address ?? "Chưa cung cấp")</div>
+            </div>
+            <div class="row">
+                <div class="col-sm-3 font-weight-bold">Thời gian đặt:</div>
+                <div class="col-sm-9">@(Model.CreatedOn?.ToString("dd/MM/yyyy HH:mm") ?? "Chưa có")</div>
+            </div>
+        </div>
+    </div>
+
+    <h4 class="font-weight-bold mb-3 text-secondary"><i class="fas fa-birthday-cake mr-2"></i> Chi tiết các món đã đặt</h4>
+
+    @if (Model != null && Model.Details != null && Model.Details.Any())
+    {
+        <div class="table-responsive">
+            <table class="table table-bordered align-middle" id="cartTable">
+                <thead class="thead-light">
+                    <tr>
+                        <th>Hình ảnh</th>
+                        <th>Tên sản phẩm</th>
+                        <th>Đơn giá</th>
+                        <th style="width:140px">Số lượng</th>
+                        <th>Thành tiền</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Details)
+                    {
+                        // ĐÃ SỬA LỖI TOSTRING: Ép giá trị mặc định tránh lỗi Nullable loại decimal?
+                        var clearPrice = item.price ?? 0;
+                        var clearAmount = item.Amount;
+                        var itemTotal = clearPrice * clearAmount;
+
+                        <tr>
+                            <td style="width:90px">
+                                <img src="@item.Product?.Picture" class="img-fluid" style="height:70px;object-fit:cover;" />
+                            </td>
+                            <td class="font-weight-bold">@(item.Product?.Title ?? "Sản phẩm bánh")</td>
+                            <td class="itemPrice">@clearPrice.ToString("#,##0") đ</td>
+                            <td class="text-center font-weight-bold">
+                                x @clearAmount
+                            </td>
+                            <td class="itemTotal text-primary font-weight-bold">@itemTotal.ToString("#,##0") đ</td>
+                        </tr>
+                    }
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <th colspan="4" class="text-right">Tổng cộng hóa đơn:</th>
+                        <th id="cartGrandTotal" class="text-danger h5 mb-0 font-weight-bold">
+                            @{
+                                var grandTotal = Model.Details.Sum(x => (x.price ?? 0) * x.Amount);
+                            }
+                            @grandTotal.ToString("#,##0") đ
+                        </th>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div class="text-center my-5">
+            <p class="text-muted">Không tìm thấy dữ liệu sản phẩm của đơn hàng này.</p>
+        </div>
+    }
+
+    <div class="text-center mt-5">
+        <a href="/" class="btn btn-primary py-3 px-5 rounded-pill font-weight-bold shadow-sm">
+            <i class="fas fa-home mr-2"></i> Quay về trang chủ tiếp tục mua sắm
+        </a>
+    </div>
+</div>

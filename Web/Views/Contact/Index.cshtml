@@ -1,0 +1,78 @@
+﻿@model IEnumerable<Core.Database.Models.Contact>
+@{
+    ViewBag.Title = "Liên hệ";
+    Layout = "~/Views/Shared/_Site.cshtml";
+}
+
+<div class="container-fluid contact py-6 wow bounceInUp" data-wow-delay="0.1s">
+    <div class="container">
+        <div class="p-5 bg-light rounded font-text">
+            <div class="row g-4">
+
+                <div class="col-lg-6">
+                    <small class="d-inline-block fw-bold text-dark text-uppercase bg-light border border-primary rounded-pill px-4 py-1 mb-3">Get In Touch</small>
+                    <h1 class="display-5 mb-4">Contact Us For Any Queries!</h1>
+                    <p class="mb-4">The contact form is currently inactive. Get a functional and working contact form with Ajax & PHP in a few minutes.</p>
+
+                    <form asp-action="Index" method="post">
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <input type="text" name="Name" class="form-control border-primary p-3" placeholder="Your Name" required>
+                            </div>
+                            <div class="col-12">
+                                <input type="email" name="Email" class="form-control border-primary p-3" placeholder="Enter Your Email" required>
+                            </div>
+                            <div class="col-12">
+                                <textarea name="Message" class="w-100 form-control border-primary p-3" rows="5" placeholder="Your Message" required></textarea>
+                            </div>
+                            <div class="col-12 text-center">
+                                <button class="btn btn-primary w-100 py-3 rounded-pill" type="submit">Submit Now</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="col-lg-6">
+                    <h4 class="mb-4 text-dark" style="font-weight: 600;">Phản hồi của bạn</h4>
+
+                    <div style="max-height: 500px; overflow-y: auto; padding-right: 5px;">
+                        @if (Model != null && Model.Any())
+                        {
+                            @foreach (var item in Model)
+                            {
+                                <div class="card mb-3 shadow-sm bg-white" style="border-radius: 15px; border: 1px solid #e3e6f0;">
+                                    <div class="card-body p-4">
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <h5 class="card-title mb-0 text-primary" style="font-weight: bold;">@item.Name</h5>
+                                            <small class="text-muted"><i class="fa fa-calendar-alt"></i> @item.CreatedAt.ToString("dd/MM/yyyy HH:mm")</small>
+                                        </div>
+                                        <p class="card-text text-dark">@item.Message</p>
+
+                                        @if (!string.IsNullOrEmpty(item.AdminReply))
+                                        {
+                                            <div class="p-3 bg-light rounded mt-3" style="border-left: 4px solid #8B5A2B;">
+                                                <div class="d-flex justify-content-between mb-1">
+                                                    <small class="fw-bold text-dark"><i class="fa fa-reply"></i> Phản hồi từ admin</small>
+                                                    <small class="text-muted">@item.RepliedAt?.ToString("dd/MM/yyyy HH:mm")</small>
+                                                </div>
+                                                <p class="mb-0 text-secondary" style="font-style: italic;">@item.AdminReply</p>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <p class="text-muted italic">Chưa có lượt liên hệ hoặc góp ý nào.</p>
+                        }
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Js {
+}

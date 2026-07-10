@@ -1,0 +1,98 @@
+﻿@model Web.Models.RegisterViewModel
+@{
+    ViewBag.Title = "Đăng ký tài khoản";
+    Layout = "~/Views/Shared/_Site.cshtml";
+}
+
+<div class="container-fluid register py-6 wow bounceInUp" data-wow-delay="0.1s">
+    <div class="container">
+        <div class="row justify-content-center g-0 shadow rounded overflow-hidden auth-card">
+
+            <div class="col-lg-5 d-none d-lg-flex auth-side">
+                <div class="auth-side-overlay d-flex flex-column justify-content-center align-items-start p-5">
+                    <small class="d-inline-block fw-bold text-uppercase bg-white text-primary rounded-pill px-4 py-1 mb-3">Chào mừng</small>
+                    <h1 class="display-5 text-white mb-3">Tham gia cùng<br>Old<span class="text-warning">Mil</span></h1>
+                    <p class="text-white-50 mb-0">Đăng ký tài khoản để đặt bánh nhanh hơn, theo dõi đơn hàng và nhận ưu đãi dành riêng cho thành viên.</p>
+                </div>
+            </div>
+
+            <div class="col-lg-7 bg-white">
+                <div class="p-5">
+                    <h1 class="mb-2">Đăng ký tài khoản</h1>
+                    <p class="text-muted mb-4">Điền thông tin bên dưới để tạo tài khoản khách hàng.</p>
+
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2" role="alert"></div>
+
+                    <form asp-action="Register" asp-controller="Account" method="post">
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label asp-for="FullName" class="form-label fw-bold"></label>
+                                <input asp-for="FullName" class="form-control border-primary p-3" placeholder="Nguyễn Văn A">
+                                <span asp-validation-for="FullName" class="text-danger small"></span>
+                            </div>
+                            <div class="col-12">
+                                <label asp-for="Email" class="form-label fw-bold"></label>
+                                <input asp-for="Email" class="form-control border-primary p-3" placeholder="ban@email.com">
+                                <span asp-validation-for="Email" class="text-danger small"></span>
+                            </div>
+                            <div class="col-12">
+                                <label asp-for="Phone" class="form-label fw-bold"></label>
+                                <input asp-for="Phone" class="form-control border-primary p-3" placeholder="09xxxxxxxx">
+                                <span asp-validation-for="Phone" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="Password" class="form-label fw-bold"></label>
+                                <input asp-for="Password" class="form-control border-primary p-3" placeholder="••••••••">
+                                <span asp-validation-for="Password" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="ConfirmPassword" class="form-label fw-bold"></label>
+                                <input asp-for="ConfirmPassword" class="form-control border-primary p-3" placeholder="••••••••">
+                                <span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
+                            </div>
+                            <div class="col-12 mt-4">
+                                <button class="btn btn-primary w-100 py-3 rounded-pill" type="submit">Đăng ký</button>
+                            </div>
+                            <div class="col-12 text-center">
+                                <p class="mb-0 text-muted">
+                                    Đã có tài khoản?
+                                    <a asp-action="Login" asp-controller="Account" class="text-primary fw-bold">Đăng nhập ngay</a>
+                                </p>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@section Css {
+    <style>
+        .register {
+            background: #FBF4EE;
+            min-height: calc(100vh - 200px);
+        }
+
+        .auth-card {
+            border-radius: 20px !important;
+        }
+
+        .auth-side {
+            background: url('/img/menu-02.jpg') center center / cover no-repeat;
+            position: relative;
+        }
+
+        .auth-side-overlay {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(180deg, rgba(185, 139, 115, .55), rgba(75, 56, 50, .85));
+        }
+
+        form .form-control:focus {
+            border-color: var(--bs-primary);
+            box-shadow: 0 0 0 .2rem rgba(185, 139, 115, .25);
+        }
+    </style>
+}

@@ -1,0 +1,132 @@
+﻿@model System.Collections.IEnumerable
+@{
+    ViewBag.Title = "Quản lý đặt lịch";
+    Layout = "~/Areas/Admin/Views/Shared/_Admin.cshtml";
+}
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="m-0 text-dark" style="font-weight: 600;">Quản lý đặt lịch</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="#">Trang chủ</a></li>
+                    <li class="breadcrumb-item active">Quản lý đặt lịch</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="card mt-2">
+                    <div class="card-header" style="background-color: #fff; border-bottom: 1px solid #rgba(0,0,0,.125);">
+                        <h3 class="card-title text-primary font-weight-bold m-0">
+                            <i class="fas fa-calendar-check mr-2"></i> Danh sách khách đặt bàn & bánh
+                        </h3>
+                    </div>
+
+                    <div class="card-body">
+                        @if (TempData["Message"] != null)
+                        {
+                            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                <i class="icon fas fa-check-circle mr-2"></i> @TempData["Message"]
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                        }
+
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped table-hover m-0" style="width: 100%; table-layout: auto;">
+                                <thead class="bg-light text-center">
+                                    <tr>
+                                        <th class="align-middle text-nowrap" style="font-weight: 600; color: #495057;">Khách hàng</th>
+                                        <th class="align-middle text-nowrap" style="font-weight: 600; color: #495057;">Điện thoại</th>
+                                        <th class="align-middle text-nowrap" style="font-weight: 600; color: #495057;">Thời gian hẹn</th>
+                                        <th class="align-middle text-nowrap" style="font-weight: 600; color: #495057;">Yêu cầu đặc biệt</th>
+                                        <th class="align-middle text-nowrap" style="font-weight: 600; color: #495057;">Trạng thái</th>
+                                        <th class="align-middle text-nowrap" style="font-weight: 600; color: #495057; width: 280px;">Phản hồi của Admin</th>
+                                        <th class="align-middle text-nowrap" style="font-weight: 600; color: #495057; width: 90px;">Thao tác</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (Model == null || !((System.Collections.ICollection)Model).Cast<object>().Any())
+                                    {
+                                        <tr>
+                                            <td colspan="7" class="text-center text-muted py-4">Chưa có dữ liệu lịch đặt nào.</td>
+                                        </tr>
+                                    }
+                                    else
+                                    {
+                                        foreach (dynamic item in Model)
+                                        {
+                                            <tr>
+                                                <td class="align-middle text-center font-weight-bold text-nowrap">@item.FullName</td>
+
+                                                <td class="align-middle text-center text-nowrap">
+                                                    <span class="badge badge-secondary py-1 px-2" style="font-size: 14px;">@item.Phone</span>
+                                                </td>
+
+                                                <td class="align-middle text-center text-nowrap" style="font-size: 13px;">
+                                                    <div class="text-primary mb-1"><i class="far fa-clock"></i> @item.BookingTime.ToString()</div>
+                                                    <div class="text-success"><i class="far fa-calendar-alt"></i> @item.BookingDate.ToString("dd/MM/yyyy")</div>
+                                                </td>
+
+                                                <td class="align-middle text-secondary" style="min-width: 150px;">@item.Note</td>
+
+                                                <td class="align-middle text-center text-nowrap">
+                                                    @{
+                                                        string badgeClass = "badge-warning text-dark";
+                                                        if (item.Status == "Đã xác nhận") { badgeClass = "badge-success text-white"; }
+                                                        else if (item.Status == "Từ chối") { badgeClass = "badge-danger text-white"; }
+                                                    }
+                                                    <span class="badge @badgeClass p-2 shadow-sm" style="font-size: 13px; min-width: 90px; font-weight: 600;">@item.Status</span>
+                                                </td>
+
+                                                <td class="align-middle">
+                                                    <form action="/Admin/Booking/Reply" method="post" class="m-0">
+                                                        @Html.AntiForgeryToken()
+                                                        <input type="hidden" name="bookingId" value="@item.Id" />
+
+                                                        <div class="form-group mb-1">
+                                                            <input type="text" name="adminComment" value="@item.AdminReply" class="form-control form-control-sm" placeholder="Lời nhắn..." style="border-radius: 4px;">
+                                                        </div>
+                                                        <div class="d-flex">
+                                                            <select name="newStatus" class="form-control form-control-sm mr-1 bg-white" style="border-radius: 4px; height: 31px;">
+                                                                <option value="Chờ duyệt" selected="@(item.Status == "Chờ duyệt")">Chờ duyệt</option>
+                                                                <option value="Đã xác nhận" selected="@(item.Status == "Đã xác nhận")">Xác nhận đơn</option>
+                                                                <option value="Từ chối" selected="@(item.Status == "Từ chối")">Từ chối</option>
+                                                            </select>
+                                                            <button type="submit" class="btn btn-primary btn-sm px-2 font-weight-bold" style="border-radius: 4px; white-space: text-nowrap;">
+                                                                <i class="fas fa-save mr-1"></i> Lưu
+                                                            </button>
+                                                        </div>
+                                                    </form>
+                                                </td>
+
+                                                <td class="align-middle text-center">
+                                                    <form action="/Admin/Booking/Delete" method="post" class="m-0" onsubmit="return confirm('Bạn có chắc muốn xóa lịch đặt này?');">
+                                                        @Html.AntiForgeryToken()
+                                                        <input type="hidden" name="id" value="@item.Id" />
+                                                        <button type="submit" class="btn btn-danger btn-sm px-2 font-weight-bold" style="border-radius: 4px; width: 100%; height: 31px;">
+                                                            <i class="fas fa-trash-alt mr-1"></i> Xóa
+                                                        </button>
+                                                    </form>
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

@@ -1,0 +1,149 @@
+﻿@model List<Web.Models.CartItem>
+@{
+    ViewData["Title"] = "Giỏ hàng của bạn";
+    Layout = "~/Views/Shared/_Site.cshtml";
+}
+
+<div class="container-fluid bg-light py-6 my-6 mt-0">
+    <div class="container text-center animated bounceInDown">
+        <h1 class="display-1 mb-4">Giỏ Hàng</h1>
+    </div>
+</div>
+
+<div class="container py-5">
+    @if (Model != null && Model.Any())
+    {
+        <div class="table-responsive">
+            <table class="table table-bordered align-middle" id="cartTable">
+                <thead class="thead-light">
+                    <tr>
+                        <th>Hình ảnh</th>
+                        <th>Tên sản phẩm</th>
+                        <th>Đơn giá</th>
+                        <th style="width:140px">Số lượng</th>
+                        <th>Thành tiền</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr data-id="@item.ProductId">
+                            <td style="width:90px"><img src="@item.Picture" class="img-fluid" style="height:70px;object-fit:cover;" /></td>
+                            <td>@item.Title</td>
+                            <td class="itemPrice">@item.Price.ToString("#,##0") đ</td>
+                            <td>
+                                <input type="number" min="1" class="form-control inputAmount" value="@item.Amount" data-id="@item.ProductId" />
+                            </td>
+                            <td class="itemTotal">@item.Total.ToString("#,##0") đ</td>
+                            <td>
+                                <button class="btn btn-danger btn-sm btnRemoveItem" data-id="@item.ProductId">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <th colspan="4" class="text-right">Tổng cộng:</th>
+                        <th id="cartGrandTotal">@Model.Sum(i => i.Total).ToString("#,##0") đ</th>
+                        <th></th>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+        <div class="text-right">
+            <a href="@Url.Action("Checkout", "Cart")" class="btn btn-primary py-2 px-4 rounded-pill">
+                <i class="fas fa-credit-card mr-2"></i>Tiến hành đặt hàng
+            </a>
+        </div>
+    }
+    else
+    {
+        <div class="text-center my-5">
+            <p class="text-muted">Giỏ hàng của bạn đang trống.</p>
+            <a href="@Url.Action("Index", "Product")" class="btn btn-primary rounded-pill py-2 px-4">Tiếp tục mua hàng</a>
+        </div>
+    }
+</div>
+
+@section Css {
+    <link href="/plugins/toastr/toastr.min.css" rel="stylesheet" />
+    <link href="/plugins/sweetalert2/sweetalert2.min.css" rel="stylesheet" />
+}
+@section Js {
+    <script src="/plugins/toastr/toastr.min.js"></script>
+    <script src="/plugins/sweetalert2/sweetalert2.all.min.js"></script>
+    <script>
+        $(document).on('change', '.inputAmount', function () {
+            let productId = $(this).data('id');
+            let amount = parseInt($(this).val());
+            let row = $(this).closest('tr');
+
+            if (isNaN(amount) || amount < 1) {
+                amount = 1;
+                $(this).val(1);
+            }
+
+            $.ajax({
+                url: '/Cart/UpdateAmount',
+                type: 'POST',
+                data: { productId: productId, amount: amount },
+                success: function (res) {
+                    if (res.success) {
+                        row.find('.itemTotal').text(numberFormat(res.itemTotal) + ' đ');
+                        $('#cartGrandTotal').text(numberFormat(res.cartTotal) + ' đ');
+                        updateNavbarCartCount(res.cartCount);
+                    } else {
+                        toastr.error(res.message);
+                    }
+                },
+                error: function () {
+                    toastr.error('Lỗi: Không thể cập nhật số lượng.');
+                }
+            });
+        });
+
+        $(document).on('click', '.btnRemoveItem', function () {
+            let productId = $(this).data('id');
+            let row = $(this).closest('tr');
+
+            Swal.fire({
+                title: 'Bạn chắc không?',
+                text: "Sản phẩm sẽ bị xóa khỏi giỏ hàng!",
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Xác nhận',
+                cancelButtonText: 'Hủy'
+            }).then(function (result) {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: '/Cart/RemoveItem',
+                        type: 'POST',
+                        data: { productId: productId },
+                        success: function (res) {
+                            if (res.success) {
+                                row.remove();
+                                $('#cartGrandTotal').text(numberFormat(res.cartTotal) + ' đ');
+                                updateNavbarCartCount(res.cartCount);
+                                toastr.success('Đã xóa sản phẩm khỏi giỏ hàng.');
+                                if (res.cartCount === 0) {
+                                    location.reload();
+                                }
+                            }
+                        },
+                        error: function () {
+                            toastr.error('Lỗi: Không thể xóa sản phẩm.');
+                        }
+                    });
+                }
+            });
+        });
+
+        function numberFormat(num) {
+            return Math.round(num).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+    </script>
+}

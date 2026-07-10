@@ -1,0 +1,134 @@
+﻿<!-- Events Start -->
+<div class="container-fluid event py-6">
+    <div class="container">
+        <div class="text-center wow bounceInUp" data-wow-delay="0.1s">
+            <small class="d-inline-block fw-bold text-dark text-uppercase bg-light border border-primary rounded-pill px-4 py-1 mb-3">Bộ sưu tập mới</small>
+            <h1 class="display-5 mb-5">Hương vị mới từ căn bếp nhỏ</h1>
+        </div>
+        <div class="tab-class text-center">
+            <ul class="nav nav-pills d-inline-flex justify-content-center mb-5 wow bounceInUp" data-wow-delay="0.1s">
+                <div class="d-flex justify-content-center flex-wrap mb-5">
+                    <button class="btn btn-outline-primary mx-2 my-1 btn-category-filter active" data-id="">Tất cả</button>
+
+                    @if (ViewBag.Categories != null)
+                    {
+                        foreach (var cat in (List<Core.Database.Models.Category>)ViewBag.Categories)
+                        {
+                            <button class="btn btn-outline-primary mx-2 my-1 btn-category-filter" data-id="@cat.Id">@cat.Name</button>
+                        }
+                    }
+                </div>
+            </ul>
+            <div class="tab-content">
+                <div id="tab-1" class="tab-pane fade show p-0 active">
+                    <div class="row g-4">
+                        <div class="col-lg-12">
+                            <div class="row g-4 IsComming">
+                                
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Events End -->
+
+<script>
+    $(document).ready(function () {
+        let allProducts = [];
+
+        // Hàm sinh mã HTML (Đã bổ sung chuẩn phần hiển thị giá tiền)
+        function renderProductItem(product) {
+            // 1. Tự động kiểm tra trạng thái Sale giống hệt logic cũ của bạn
+            let priceHtml = '';
+
+            // Xử lý linh hoạt trường hợp chữ hoa chữ thường của thuộc tính JSON
+            let isSale = product.isSale !== undefined ? product.isSale : product.IsSale;
+            let priceSale = product.priceSale !== undefined ? product.priceSale : product.PriceSale;
+            let price = product.price !== undefined ? product.price : product.Price;
+
+            if (isSale === true && priceSale > 0) {
+                // Nếu có giảm giá: Hiện giá đỏ + giá gốc gạch ngang gọn gàng trong một dòng
+                priceHtml = `
+                    <div class="product-price mt-1 mb-2" style="font-family: sans-serif;">
+                        <span class="text-danger fw-bold fs-5 me-2">
+                            ${priceSale.toLocaleString('vi-VN')}đ
+                        </span>
+                        <span class="text-muted text-decoration-line-through small">
+                            ${price.toLocaleString('vi-VN')}đ
+                        </span>
+                    </div>`;
+            } else {
+                // Nếu không giảm giá: Hiện một mức giá gốc duy nhất lịch sự
+                priceHtml = `
+                    <div class="product-price mt-1 mb-2" style="font-family: sans-serif;">
+                        <span class="text-dark fw-bold fs-5">
+                            ${(price ? price.toLocaleString('vi-VN') : '0')}đ
+                        </span>
+                    </div>`;
+            }
+
+            // 2. Trả về khối HTML giao diện (Chỉ có hình ảnh + Hover kính lúp + Giá tiền)
+            return `
+                <div class="col-md-6 col-lg-3 animated fadeIn product-item-card">
+                    <div class="event-img position-relative">
+                        <a href="/Product/Details?id=${product.id}">
+                            <img class="img-fluid rounded w-100" src="${product.picture}" alt="${product.title}" style="aspect-ratio: 1/1; object-fit: cover;">
+                        </a>
+                        <div class="event-overlay d-flex flex-column p-4">
+                            <h4 class="me-auto mb-1">${product.title}</h4>
+
+                            ${priceHtml}
+
+                            <a href="${product.picture}" data-lightbox="event-1" class="my-auto mt-2">
+                                <i class="fas fa-search-plus text-dark fa-2x"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>`;
+        }
+
+        // Hàm thực hiện lọc dữ liệu dưới Client
+        function filterProducts(catId) {
+            $(".IsComming").empty(); // Xóa sạch danh sách cũ
+
+            let filtered = allProducts;
+            if (catId) {
+                filtered = allProducts.filter(p => {
+                    let pCatId = p.categoryId !== undefined ? p.categoryId : p.CategoryId;
+                    return String(pCatId) === String(catId);
+                });
+            }
+
+            // Đổ bánh ra màn hình
+            if (filtered.length > 0) {
+                filtered.forEach(product => {
+                    $(".IsComming").append(renderProductItem(product));
+                });
+            } else {
+                $(".IsComming").append('<div class="col-12 text-center my-4 text-muted">Chưa có sản phẩm nào trong danh mục này.</div>');
+            }
+        }
+
+        // Lần đầu tải trang: Nạp dữ liệu có kèm CategoryId từ server về
+        $.getJSON("/Product/GetIsComming", {}, function (products) {
+            allProducts = products;
+            filterProducts(""); // Hiển thị Tất Cả bánh lúc đầu
+        });
+
+        // Bắt sự kiện click đổi màu nút và lọc danh mục
+        $(document).on('click', '.btn-category-filter', function (e) {
+            e.preventDefault();
+
+            $(".btn-category-filter").removeClass("active");
+            $(this).addClass("active");
+
+            let categoryId = $(this).data('id');
+            filterProducts(categoryId);
+        });
+    });
+</script>

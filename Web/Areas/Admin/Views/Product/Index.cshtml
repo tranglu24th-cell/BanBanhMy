@@ -1,0 +1,285 @@
+﻿@{
+    ViewBag.Title = "Sản phẩm";
+    Layout = "~/Areas/Admin/Views/Shared/_Admin.cshtml";
+}
+<div class="card">
+    <div class="card-header">
+        <h1 class="card-title">@ViewBag.Title</h1>
+    </div>
+    <div class="card-body table-responsive">
+        <table id="items" class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th style="width: 10px">#</th>
+                    <th>Tên sản phẩm</th>
+                    <th>Giá</th>
+                    <th>Chuyên mục</th>
+                    <th>Số lượng tồn kho</th>
+                    <th style="width: 40px">Hành động</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="modal fade" id="modal-default">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">@ViewBag.Title</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="Item">
+                    <input type="hidden" id="Id" name="Id" />
+                    <div class="form-group">
+                        <label for="Title">Tên sản phẩm</label>
+                        <input type="text" class="form-control" id="Title" name="Title" />
+                    </div>
+                    <div class="form-group">
+                        <label for="Picture">Hình đại diện</label>
+                        <input type="file" class="form-control" id="Picture" name="Picture" />
+                        <img id="product-picture" style="display: none" src="" />
+                    </div>
+                    <div class="form-group">
+                        <label for="Intro">Mô tả</label>
+                        <textarea class="form-control summernote" id="Intro" name="Intro"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="Content">Nội dung</label>
+                        <textarea class="form-control summernote" id="Content" name="Content"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="Price">Giá gốc</label>
+                        <input type="number" class="form-control" id="Price" name="Price" />
+                    </div>
+
+                    <div class="form-group">
+                        <div class="custom-control custom-checkbox">
+                            <input type="checkbox" class="custom-control-input" id="IsSale" name="IsSale" value="true" />
+                            <label class="custom-control-label" for="IsSale">Áp dụng chương trình Giảm giá (Sale)</label>
+                        </div>
+                    </div>
+                    <div class="form-group" id="PriceSaleGroup" style="display: none;">
+                        <label for="PriceSale">Giá khuyến mãi (Giá Sale)</label>
+                        <input type="number" class="form-control" id="PriceSale" name="PriceSale" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="StockQuantity">Số lượng tồn kho</label>
+                        <input type="number" class="form-control" id="StockQuantity" name="StockQuantity" min="0" value="0" />
+                    </div>
+                    <div class="form-group">
+                        <label for="CategoryId">Chuyên mục</label>
+                        <select id="CategoryId" name="CategoryId" class="form-control">
+                            <option value="">---Chọn---</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-primary btnSave">Lưu</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Css {
+    <link href="/plugins/datatables-bs4/css/datatables.bootstrap4.min.css" rel="stylesheet" />
+    <link href="/plugins/toastr/toastr.min.css" rel="stylesheet" />
+    <link href="/plugins/sweetalert2/sweetalert2.min.css" rel="stylesheet" />
+    <link href="/plugins/summernote/summernote.min.css" rel="stylesheet" />
+    <style>
+        div.dt-buttons {
+            float: right;
+        }
+
+        img.product-picture {
+            width: 32px;
+            height: 32px;
+        }
+    </style>
+}
+
+@section Js {
+    <script src="/plugins/datatables/jquery.datatables.min.js"></script>
+    <script src="/plugins/datatables-bs4/js/datatables.bootstrap4.min.js"></script>
+    <script src="/plugins/datatables-buttons/js/datatables.buttons.min.js"></script>
+    <script src="/plugins/toastr/toastr.min.js"></script>
+    <script src="/plugins/sweetalert2/sweetalert2.all.min.js"></script>
+    <script src="/plugins/moment/moment.min.js"></script>
+    <script src="/plugins/summernote/summernote.min.js"></script>
+    <script>
+        $(function (){
+            $(".summernote").summernote();
+
+            // Khởi tạo bảng dữ liệu Sản phẩm công nghệ Datatable
+            var items = $("#items").DataTable({
+                "dom": 'Blfrtip',
+                "processing": true,
+                "serverSide": true,
+                "ajax":{
+                    "url": "/Admin/Product/getList",
+                    "type": "POST",
+                    "dataType": "json",
+                    "error": function(xhr, error, code){
+                        toastr.error("Lỗi: Không có quyền truy cập chức năng này.");
+                    }
+                },
+                "columns":[
+                    {
+                        "data": null, "render": function(data, type, row, meta) { return meta.row + 1;}
+                    },
+                    {
+                        "render": function(data, type, row, meta){
+                            return "<img class='product-picture' src='"+ row.picture +"' /> " + row.title;
+                        }
+                    },
+                    {
+                        "data": "price"
+                    },
+                    {
+                        "data": "categoryName"
+                    },
+                    {
+                        "data": "stockQuantity"
+                    },
+                    {
+                        "render": function (data, type, row, meta){
+                            let tool= '<div class="btn-group">' +
+                                '<a href="#" data-toggle="dropdown" class="list-icons-item text-dark" aria-expanded="false">' +
+                                '<i class="fas fa-sort-amount-down"></i>' +
+                                '</a>' +
+                                '<div class="dropdown-menu" role="menu">' +
+                                '<a class="dropdown-item text-primary btnEdit" href="#" data-id="' + row.id + '"><i class="fas fa-pencil-alt mr-3"></i>Cập nhật</a>' +
+                                '<a class="dropdown-item text-danger btnDelete" href="#" data-id="' + row.id + '"><i class="fas fa-trash mr-3"></i>Xóa</a>' +
+                                '</div>' +
+                                '</div>';
+                            return tool;
+                        }
+                    }
+                ],
+                "buttons": [
+                    {
+                        text: '<i class="fa fa-plus mr-2"></i>Thêm sản phẩm',
+                        className: 'btn btn-info pb-1',
+                        action: function(e, dt, node, config){
+                            $("#modal-default form#Item")[0].reset();
+                            $("#Id").val("");
+                            $(".summernote").summernote('code', "");
+                            $("#product-picture").attr("src", '').hide();
+
+                            // Đảm bảo nút Sale được ẩn đi khi thêm sản phẩm mới
+                            $("#IsSale").prop('checked', false).change();
+                            $("#modal-default").modal('show');
+                        }
+                    }
+                ]
+            });
+
+            // Hiệu ứng ẩn / hiện mượt mà ô nhập Giá Sale bằng JQuery khi click checkbox
+            $(document).on('change', '#IsSale', function() {
+                if(this.checked) {
+                    $('#PriceSaleGroup').slideDown();
+                } else {
+                    $('#PriceSaleGroup').slideUp();
+                    $('#PriceSale').val('');
+                }
+            });
+
+            // Sự kiện click nút SỬA sản phẩm (Đổ dữ liệu từ server vào form)
+            $(document).on("click", "a.btnEdit", function(){
+                let id = $(this).data("id");
+                $.getJSON("/Admin/Product/GetItem", { id: id }, function(item){
+                    $("#Id").val(item.id);
+                    $("#Title").val(item.title);
+                    $("#product-picture").attr("src", item.picture).show();
+                    $("#Intro").summernote('code', item.intro);
+                    $("#Content").summernote('code', item.content);
+                    $("#Price").val(item.price);
+                    $("#StockQuantity").val(item.stockQuantity);
+                    $("#CategoryId").val(item.categoryId).change();
+
+                    // Đọc chính xác trạng thái Sale từ database lên giao diện admin
+                    if (item.isSale === true) {
+                        $("#IsSale").prop('checked', true).change();
+                        $("#PriceSale").val(item.priceSale);
+                    } else {
+                        $("#IsSale").prop('checked', false).change();
+                    }
+
+                    $("#modal-default").modal('show');
+                }).fail(function(){
+                    toastr.error("Lỗi: Không có quyền truy cập chức năng này.");
+                });
+            });
+
+            // Đọc dữ liệu danh mục chuyên mục bánh
+            $.getJSON("/Admin/Category/GetChild", { parentId: '6B04BD80-C414-4836-AC8C-CA215B574F41' }, function (data){
+                data.forEach((item) => {
+                    var o = new Option(item.name, item.id);
+                    $("#CategoryId").append(o);
+                });
+            });
+
+            // Sự kiện bấm nút LƯU dữ liệu (Gửi AJAX lên controller xử lý)
+            $(".btnSave").on('click', function () {
+                var form = $("#Item")[0];
+                var formData = new FormData(form);
+                var file = $('input[type=file]')[0].files[0];
+                if (file) {
+                    formData.append("Picture", file);
+                }
+
+                $.ajax({
+                    data: formData,
+                    url: "/Admin/Product/Save",
+                    type: "POST",
+                    processData: false,
+                    contentType: false,
+                    success: function (item) {
+                        $("#modal-default").modal('hide');
+                        toastr.success("Thông báo: Lưu thành công!!");
+                        items.ajax.reload();
+                    },
+                    error: function(){
+                        toastr.error("Lỗi: Không thể lưu dữ liệu sản phẩm.");
+                    }
+                });
+            });
+
+            // Sự kiện bấm nút XÓA sản phẩm
+            $(document).on('click', "a.btnDelete", function () {
+                let id = $(this).data("id");
+                Swal.fire({
+                    title: 'Bạn chắc không?',
+                    text: "Xóa không thể phục hồi được !",
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Xác nhận',
+                    cancelButtonText: 'Hủy'
+                }).then(function (result) {
+                    if (result.isConfirmed) {
+                        $.get("/Admin/Product/Delete", { id: id }, function (data) {
+                            if (data == true) {
+                                toastr.success('Thông báo: Xóa sản phẩm thành công.');
+                                items.ajax.reload();
+                            } else {
+                                toastr.error('Lỗi: Không xác định.');
+                            }
+                        }).fail(function(){
+                            toastr.error("Lỗi: Không có quyền truy cập chức năng này.");
+                        });
+                    }
+                });
+            });
+
+        });
+    </script>
+}

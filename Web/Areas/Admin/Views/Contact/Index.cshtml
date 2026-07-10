@@ -1,0 +1,72 @@
+﻿@model IEnumerable<Core.Database.Models.Contact>
+
+@{
+    ViewBag.Title = "Danh sách liên hệ từ khách hàng";
+    Layout = "~/Areas/Admin/Views/Shared/_Admin.cshtml";
+}
+
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Hộp thư góp ý / Liên hệ</h3>
+    </div>
+    <div class="card-body table-responsive p-0">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>STT</th>
+                    <th>Họ và tên</th>
+                    <th>Email</th>
+                    <th>Nội dung lời nhắn</th>
+                    <th>Ngày gửi</th>
+                    <th>Phản hồi / Trả lời</th>
+                    <th class="text-center">Hành động</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    int stt = 1;
+                }
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@stt</td>
+                        <td><strong class="text-dark">@item.Name</strong></td>
+                        <td><a href="mailto:@item.Email">@item.Email</a></td>
+                        <td>@item.Message</td>
+                        <td>@item.CreatedAt.ToString("dd/MM/yyyy HH:mm")</td>
+                        <td>
+                            <form action="/Admin/Contact/Reply" method="post" class="d-flex align-items-center">
+                                <input type="hidden" name="Id" value="@item.Id" />
+                                <div class="input-group">
+                                    <input type="text" name="AdminReply" class="form-control form-control-sm"
+                                           placeholder="Nhập nội dung phản hồi..." value="@item.AdminReply" required />
+                                    <button type="submit" class="btn btn-sm btn-primary">
+                                        <i class="fa fa-paper-plane"></i> Gửi
+                                    </button>
+                                </div>
+                            </form>
+
+                            @if (!string.IsNullOrEmpty(item.AdminReply))
+                            {
+                                <div class="mt-1">
+                                    <small class="text-success">
+                                        <i class="fa fa-check-circle"></i> Đã trả lời lúc: @item.RepliedAt?.ToString("dd/MM/yyyy HH:mm")
+                                    </small>
+                                </div>
+                            }
+                        </td>
+                        <td class="text-center">
+                            <form action="/Admin/Contact/Delete" method="post" onsubmit="return confirm('Bạn có chắc chắn muốn xóa lượt liên hệ này không?');">
+                                <input type="hidden" name="Id" value="@item.Id" />
+                                <button type="submit" class="btn btn-sm btn-danger">
+                                    <i class="fa fa-trash"></i> Xóa
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    stt++;
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

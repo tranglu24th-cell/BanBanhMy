@@ -1,0 +1,90 @@
+﻿@{
+    ViewBag.Title = "Khách hàng";
+    Layout = "~/Areas/Admin/Views/Shared/_Admin.cshtml";
+}
+<div class="card">
+    <div class="card-header">
+        <h1 class="card-title">@ViewBag.Title</h1>
+    </div>
+    <!-- /.card-header -->
+    <div class="card-body table-responsive">
+        <table id="items" class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th style="width: 10px">#</th>
+                    <th>Họ tên</th>
+                    <th>Email</th>
+                    <th>Số điện thoại</th>
+                    <th>Ngày đăng ký</th>
+                    <th>Số đơn hàng</th>
+                </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Css{
+    <link href="/plugins/datatables-bs4/css/datatables.bootstrap4.min.css" rel="stylesheet" />
+    <link href="/plugins/toastr/toastr.min.css" rel="stylesheet" />
+    <style>
+        div.dt-buttons {
+            float: right;
+        }
+    </style>
+}
+@section Js {
+    <script src="/plugins/datatables/jquery.datatables.min.js"></script>
+    <script src="/plugins/datatables-bs4/js/datatables.bootstrap4.min.js"></script>
+    <script src="/plugins/toastr/toastr.min.js"></script>
+    <script src="/plugins/moment/moment.min.js"></script>
+    <script>
+        $(function () {
+            $("#items").DataTable({
+                "dom": 'Blfrtip',
+                "processing": true,
+                "serverSide": true,
+                "ajax": {
+                    "url": "/Admin/Customer/getList",
+                    "type": "POST",
+                    "dataType": "json",
+                    "error": function (xhr, error, code) {
+                        toastr.error("Lỗi: Không có quyền truy cập chức năng này.");
+                    }
+                },
+                "columns": [
+                    {
+                        "data": null, "render": function (data, type, row, meta) { return meta.row + 1; }
+                    },
+                    {
+                        "data": "name", "render": function (data, type, row, meta) {
+                            return data ?? "";
+                        }
+                    },
+                    {
+                        "data": "email", "render": function (data, type, row, meta) {
+                            return data ?? "";
+                        }
+                    },
+                    {
+                        "data": "phone", "render": function (data, type, row, meta) {
+                            return data ?? "";
+                        }
+                    },
+                    {
+                        "data": "createdOn", "render": function (data, type, row, meta) {
+                            return moment(data).isValid() ? moment(data).format("DD/MM/YYYY HH:mm") : "";
+                        }
+                    },
+                    {
+                        "data": "orderCount", "render": function (data, type, row, meta) {
+                            return '<span class="badge badge-info">' + data + '</span>';
+                        }
+                    }
+                ]
+            });
+        });
+    </script>
+}

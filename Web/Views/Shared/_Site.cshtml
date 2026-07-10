@@ -1,0 +1,235 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewBag.Title</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="@ViewBag.Keywords" name="keywords">
+    <meta content="@ViewBag.Description" name="description">
+
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Playball&display=swap" rel="stylesheet">
+
+    <!-- Icon Font Stylesheet -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Libraries Stylesheet -->
+    <link href="/lib/animate/animate.min.css" rel="stylesheet">
+    <link href="/lib/lightbox/css/lightbox.min.css" rel="stylesheet">
+    <link href="/lib/owlcarousel/owl.carousel.min.css" rel="stylesheet">
+
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Template Stylesheet -->
+    <link href="/css/style.css" rel="stylesheet">
+	@await RenderSectionAsync("Css", required: false)
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+</head>
+
+<body>
+
+    <!-- Spinner Start -->
+    <div id="spinner" class="show w-100 vh-100 bg-white position-fixed translate-middle top-50 start-50  d-flex align-items-center justify-content-center">
+        <div class="spinner-grow text-primary" role="status"></div>
+    </div>
+    <!-- Spinner End -->
+    <!-- Navbar start -->
+    <div class="container-fluid nav-bar">
+        <div class="container">
+            <nav class="navbar navbar-light navbar-expand-lg py-4">
+                <a href="@Url.Action("Index", "Home")" class="navbar-brand">
+                    <h1 class="text-primary fw-bold mb-0">Old<span class="text-dark">Mil</span> </h1>
+                </a>
+                <button class="navbar-toggler py-2 px-3" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+                    <span class="fa fa-bars text-primary"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarCollapse">
+                    <div class="navbar-nav mx-auto">
+                        <a href="@Url.Action("Index", "Home")" class="nav-item nav-link active">Trang chủ</a>
+
+                        <a href="@Url.Action("About", "Home")" class="nav-item nav-link">Giới thiệu</a>
+                        @* <a href="@Url.Action("Services", "Home")" class="nav-item nav-link">Dịch vụ</a> *@
+                        <a href="@Url.Action("Index", "Product")" class="nav-item nav-link">Sản phẩm</a>
+                        @* <a href="@Url.Action("Menu", "Home")" class="nav-item nav-link">Menu</a> *@
+
+                        <div class="nav-item dropdown">
+                            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Trang</a>
+                            <div class="dropdown-menu bg-light">
+                                <a href="@Url.Action("Booking", "Home")" class="dropdown-item">Đặt bàn</a>
+                                <a href="@Url.Action("Blog", "Home")" class="dropdown-item">Bài viết</a>
+                                <a href="@Url.Action("Team", "Home")" class="dropdown-item">Đội ngũ</a>
+                                <a href="@Url.Action("Testimonial", "Home")" class="dropdown-item">Đánh giá</a>
+                                <a href="@Url.Action("Error404", "Home")" class="dropdown-item">404 Page</a>
+                            </div>
+                        </div>
+
+                        <a href="@Url.Action("Index", "Contact")" class="nav-item nav-link">Liên hệ</a>
+                    </div>
+                    <div class="d-flex align-items-center dynamic-header-actions">
+
+                        @* ================= 1. KHU VỰC MENU TÀI KHOẢN (BOOTSTRAP 5) ================= *@
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            <div class="dropdown me-2">
+                                <button class="btn dropdown-toggle" type="button" id="userMenu" data-bs-toggle="dropdown" aria-expanded="false" style="border: 1px solid #d3b589; background-color: #fff; border-radius: 30px; padding: 6px 18px; font-size: 14px; color: #333;">
+                                    <i class="fas fa-user-circle me-1"></i> Xin chào, @User.Identity.Name
+                                </button>
+
+                                <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="userMenu" style="border-radius: 10px; border: 1px solid #eee;">
+                                    @if (User.IsInRole("Admin") || User.IsInRole("Employee"))
+                                    {
+                                        <li>
+                                            <a class="dropdown-item py-2 text-danger fw-bold" href="/Admin/Home/Index">
+                                                <i class="fas fa-user-shield me-2"></i>Trang Quản Trị (Admin)
+                                            </a>
+                                        </li>
+                                        <li><hr class="dropdown-divider"></li>
+                                    }
+                                    else
+                                    {
+                                        <li>
+                                            <a class="dropdown-item py-2" href="@Url.Action("OrderHistory", "Account", new { area = "" })">
+                                                <i class="fas fa-history me-2 text-muted"></i>Lịch sử mua hàng
+                                            </a>
+                                        </li>
+                                        <li><hr class="dropdown-divider"></li>
+                                    }
+                                    <li>
+                                        <a class="dropdown-item py-2 text-secondary" href="@Url.Action("Logout", "Account", new { area = "" })" onclick="return confirm('Bạn có chắc chắn muốn đăng xuất không?')">
+                                            <i class="fas fa-sign-out-alt me-2"></i>Đăng xuất
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        }
+                        else
+                        {
+                            @* Nếu chưa đăng nhập: Hiện icon Đăng nhập của Khách hàng *@
+                            <a href="/Account/Login" class="btn btn-sm btn-outline-secondary rounded-circle p-2 me-2" title="Khách hàng đăng nhập" style="width: 38px; height: 38px; line-height: 20px;">
+                                <i class="fas fa-user"></i>
+                            </a>
+                        }
+
+                        @* ================= 2. NÚT VÀO ADMIN CỦA BẠN (CỐ ĐỊNH) ================= *@
+                        <a href="/Admin/Member/Login" class="btn btn-sm btn-dark rounded-circle p-2 me-2" title="Cổng đăng nhập hệ thống Admin" style="width: 38px; height: 38px; line-height: 20px;">
+                            <i class="fas fa-lock"></i>
+                        </a>
+
+                        
+
+                    </div> @* <-- Thẻ đóng div tổng của class dynamic-header-actions, đảm bảo cân bằng cấu trúc *@
+                    <a href="@Url.Action("Index", "Cart")" class="btn btn-outline-primary btn-md-square me-3 rounded-circle position-relative">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span id="navCartCount" class="badge badge-danger position-absolute" style="top:-5px; right:-5px;">0</span>
+                    </a>
+
+                    <button class="btn-search btn btn-primary btn-md-square me-4 rounded-circle d-none d-lg-inline-flex" data-bs-toggle="modal" data-bs-target="#searchModal"><i class="fas fa-search"></i></button>
+                    <a href="@Url.Action("Booking", "Home")" class="btn btn-primary py-2 px-4 d-none d-xl-inline-block rounded-pill">Đặt bàn ngay</a>
+                </div>
+            </nav>
+        </div>
+    </div>
+    <!-- Navbar End -->
+	@RenderBody()
+    <!-- Footer Start -->
+    <div class="container-fluid bg-dark text-light footer mt-5 py-5" style="background-color: #1c1814 !important;">
+        <div class="container py-4">
+            <div class="row g-5">
+                <div class="col-lg-3 col-md-6">
+                    <h2 class="fw-bold mb-4" style="color: #bfa37a;">Old Mill</h2>
+                    <p class="text-muted" style="font-size: 14px; line-height: 1.8;">
+                        Tiệm bánh Old Mill tự hào mang lại những chiếc bánh tươi ngon, làm thủ công 100% trong ngày để đồng hành cùng những khoảnh khắc ngọt ngào của bạn.
+                    </p>
+                    <div class="d-flex pt-2">
+                        <a class="btn btn-square btn-outline-light rounded-circle me-2" href="#"><i class="fab fa-twitter"></i></a>
+                        <a class="btn btn-square btn-outline-light rounded-circle me-2" href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a class="btn btn-square btn-outline-light rounded-circle me-2" href="#"><i class="fab fa-youtube"></i></a>
+                        <a class="btn btn-square btn-outline-light rounded-circle me-0" href="#"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-md-6">
+                    <h4 class="text-white mb-4 fw-bold">Sản Phẩm Chính</h4>
+                    <a class="btn btn-link text-muted p-0 mb-2 d-block" href="/Product" style="text-decoration: none;">Bánh Kem Sinh Nhật</a>
+                    <a class="btn btn-link text-muted p-0 mb-2 d-block" href="/Product" style="text-decoration: none;">Bánh Choux Cream</a>
+                    <a class="btn btn-link text-muted p-0 mb-2 d-block" href="/Product" style="text-decoration: none;">Bánh Ngọt</a>
+                    <a class="btn btn-link text-muted p-0 mb-2 d-block" href="/Product" style="text-decoration: none;">Bánh Teabreak Sự Kiện</a>
+                </div>
+
+                <div class="col-lg-3 col-md-6">
+                    <h4 class="text-white mb-4 fw-bold">Liên Hệ</h4>
+                    <p class="mb-2 text-muted"><i class="fa fa-map-marker-alt me-3" style="color: #bfa37a;"></i>Phường Khánh Hậu, Tỉnh Tây Ninh</p>
+                    <p class="mb-2 text-muted"><i class="fa fa-phone-alt me-3" style="color: #bfa37a;"></i>0854848058</p>
+                    <p class="mb-2 text-muted"><i class="fa fa-envelope me-3" style="color: #bfa37a;"></i>contact@oldmill.com</p>
+                    <p class="mb-2 text-muted"><i class="fa fa-clock me-3" style="color: #bfa37a;"></i>Mở cửa: 07:00 AM - 10:00 PM</p>
+                </div>
+
+                <div class="col-lg-3 col-md-6">
+                    <h4 class="text-white mb-4 fw-bold">Thư Viện Ảnh</h4>
+                    <div class="row g-2 pt-2">
+                        <div class="col-4"><img class="img-fluid rounded bg-light p-1" src="/img/banh1.jpg" alt="Bánh"></div>
+                        <div class="col-4"><img class="img-fluid rounded bg-light p-1" src="/img/banh2.jpg" alt="Bánh"></div>
+                        <div class="col-4"><img class="img-fluid rounded bg-light p-1" src="/img/banh3.jpg" alt="Bánh"></div>
+                        <div class="col-4"><img class="img-fluid rounded bg-light p-1" src="/img/banh4.jpg" alt="Bánh"></div>
+                        <div class="col-4"><img class="img-fluid rounded bg-light p-1" src="/img/banh5.jpg" alt="Bánh"></div>
+                        <div class="col-4"><img class="img-fluid rounded bg-light p-1" src="/img/banh6.jpg" alt="Bánh"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="container mt-4 pt-4 border-top border-secondary">
+            <div class="row">
+                <div class="col-md-6 text-center text-md-start mb-3 mb-md-0 text-muted" style="font-size: 13px;">
+                    &copy; @DateTime.Now.Year <span class="text-white fw-bold">Old Mill Bakery</span>. Tất cả các quyền được bảo lưu.
+                </div>
+                <div class="col-md-6 text-center text-md-end text-muted" style="font-size: 13px;">
+                    Thiết kế bởi <a class="border-bottom" href="#" style="color: #bfa37a; text-decoration: none;">Nhóm Đồ Án Old Mill</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Footer End -->
+    <!-- Copyright Start -->
+    <div class="container-fluid copyright bg-dark py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
+                    <span class="text-light"><a href="#"><i class="fas fa-copyright text-light me-2"></i>Your Site Name</a>, All right reserved.</span>
+                </div>
+                <div class="col-md-6 my-auto text-center text-md-end text-white">
+                    <!--/*** This template is free as long as you keep the below author’s credit link/attribution link/backlink. ***/-->
+                    <!--/*** If you'd like to use the template without the below author’s credit link/attribution link/backlink, ***/-->
+                    <!--/*** you can purchase the Credit Removal License from "https://htmlcodex.com/credit-removal". ***/-->
+                    Designed By <a class="border-bottom" href="https://htmlcodex.com">HTML Codex</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Copyright End -->
+    <!-- Back to Top -->
+    <a href="#" class="btn btn-md-square btn-primary rounded-circle back-to-top"><i class="fa fa-arrow-up"></i></a>
+
+
+    <!-- JavaScript Libraries -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/lib/wow/wow.min.js"></script>
+    <script src="/lib/easing/easing.min.js"></script>
+    <script src="/lib/waypoints/waypoints.min.js"></script>
+    <script src="/lib/counterup/counterup.min.js"></script>
+    <script src="/lib/lightbox/js/lightbox.min.js"></script>
+    <script src="/lib/owlcarousel/owl.carousel.min.js"></script>
+	@await RenderSectionAsync("Js", required: false)
+   
+   
+    <!-- Template Javascript -->
+    <script src="/js/main.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

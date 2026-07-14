@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Diagnostics;
 using Web.Models;
 using Web.Models.EF;
 
@@ -10,7 +9,7 @@ namespace Web.Controllers
     {
         private readonly FoodContext _dbContext;
         public HomeController(FoodContext dbContext)
-        {
+        { 
             _dbContext = dbContext;
         }
 

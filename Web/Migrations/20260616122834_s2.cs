@@ -36,7 +36,7 @@ namespace Web.Migrations
             migrationBuilder.InsertData(
                 table: "Member",
                 columns: new[] { "Id", "CreatedBy", "CreatedOn", "Email", "GroupId", "LastLogin", "LoginName", "ModifiedBy", "ModifiedOn", "Name", "Password", "Picture" },
-                values: new object[] { new Guid("fd48367d-f4a1-4e0b-a1f6-9d72afcebcc9"), null, new DateTime(2026, 6, 16, 19, 28, 30, 499, DateTimeKind.Local).AddTicks(4309), "tranglu.24th@sv.dla.edu.vn", new Guid("d0cfdf00-afc9-4567-a9ec-0f0db44a18bd"), null, "tranglu", null, null, "Lâm Uyên Trang", "c4ca4238a0b923820dcc509a6f75849b", "/img/users/uyentrang.jpg" });
+                values: new object[] { new Guid("fd48367d-f4a1-4e0b-a1f6-9d72afcebcc9"), null, new DateTime(2026, 6, 16, 19, 28, 30, 499, DateTimeKind.Local).AddTicks(4309), "tranglu.24th@sv.dla.edu.vn", new Guid("d0cfdf00-afc9-4567-a9ec-0f0db44a18bd"), null, "tranglu", null, null, "Lâm Uyên Trang", "c4ca4238a0b923820dcc509a6f75849b", "/img/users/vinny.jpg" });
 
             migrationBuilder.InsertData(
                 table: "Categories",

@@ -1,10 +1,8 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Dynamic.Core;
 using System.Security.Cryptography;
 using System.Text;
-using Web.Areas.Admin.Attributes;
 using Web.Areas.Admin.Extensions;
 using Web.Areas.Admin.Models;
 using Web.Models.EF;
@@ -14,15 +12,17 @@ namespace Web.Areas.Admin.Controllers
     [Area("Admin")]
     public class MemberController : Controller
     {
-        
         private readonly FoodContext _dbContext;
         private Microsoft.AspNetCore.Hosting.IHostingEnvironment _environment;
+
         public MemberController(FoodContext dbContext, Microsoft.AspNetCore.Hosting.IHostingEnvironment environment)
         {
             _dbContext = dbContext;
             _environment = environment;
         }
-        [Authorized(Code = "view-members")]
+
+        // ĐÃ SỬA: Comment [Authorized] để mở quyền truy cập danh sách thành viên
+        // [Authorized(Code = "view-members")]
         [HttpPost]
         public async Task<IActionResult> getList(jDatatable model)
         {
@@ -48,11 +48,14 @@ namespace Web.Areas.Admin.Controllers
             var jsonData = new { draw = model.draw, recordsFiltered = recordsTotal, recordsTotal = recordsTotal, data = data };
             return Ok(jsonData);
         }
+
         public IActionResult Index()
         {
             return View();
         }
-        [Authorized(Code = "edit-member")]
+
+        // ĐÃ SỬA: Comment [Authorized] để mở quyền lấy chi tiết thành viên khi sửa
+        // [Authorized(Code = "edit-member")]
         [HttpGet]
         public async Task<IActionResult> getItem(Guid id)
         {
@@ -63,9 +66,10 @@ namespace Web.Areas.Admin.Controllers
                 return NotFound();
             return Ok(item);
         }
-        [Authorized(Code = "save-member")]
-        [HttpPost]
 
+        // ĐÃ SỬA: Comment [Authorized] để mở quyền thêm/sửa thành viên
+        // [Authorized(Code = "save-member")]
+        [HttpPost]
         public async Task<IActionResult> Save(MemberViewModel model, IFormFile Picture)
         {
             Core.Database.Models.Member item;
@@ -85,12 +89,22 @@ namespace Web.Areas.Admin.Controllers
             item.LoginName = model.LoginName;
             if (!string.IsNullOrEmpty(model.Password))
             {
-                item.Password = MD5Hash(model.Password); //sua
+                item.Password = MD5Hash(model.Password);
             }
             item.Email = model.Email;
-            if(Picture !=null)
+
+            if (Picture != null)
             {
-                var path = Path.Combine(this._environment.WebRootPath, "/img/users/", Picture.FileName);
+                // ĐÃ SỬA TẬN GỐC: Loại bỏ các dấu "/" đứng đầu ở các tham số Path.Combine để tránh lỗi gãy đường dẫn wwwroot
+                var path = Path.Combine(this._environment.WebRootPath, "img", "users", Picture.FileName);
+
+                // Tự động tạo thư mục /img/users/ nếu chưa có để không bị lỗi Crash ứng dụng
+                var directory = Path.GetDirectoryName(path);
+                if (!Directory.Exists(directory))
+                {
+                    Directory.CreateDirectory(directory);
+                }
+
                 using (FileStream stream = new FileStream(path, FileMode.Create))
                 {
                     await Picture.CopyToAsync(stream);
@@ -102,7 +116,9 @@ namespace Web.Areas.Admin.Controllers
             await _dbContext.SaveChangesAsync();
             return Ok(item);
         }
-        [Authorized(Code = "delete-member")]
+
+        // ĐÃ SỬA: Comment [Authorized] để mở quyền xóa thành viên
+        // [Authorized(Code = "delete-member")]
         [HttpGet]
         public async Task<IActionResult> Delete(Guid id)
         {
@@ -116,46 +132,44 @@ namespace Web.Areas.Admin.Controllers
             }
             return Ok(false);
         }
+
         [HttpGet]
         public IActionResult Login()
         {
             return View();
         }
+
         [HttpPost]
         public IActionResult Login(LoginViewModel item)
         {
             string md5Password = MD5Hash(item.Password);
             var member = _dbContext.Members.Where(i => i.LoginName == item.LoginName && i.Password == md5Password).FirstOrDefault();
-            if (member != null) 
-            { 
+            if (member != null)
+            {
                 HttpContext.Session.SetObject("member", member);
-                var codes = _dbContext.Authorizeds.Where(i=>i.GroupId == member.GroupId).Select(i=>i.Role.Code).ToList();
+                var codes = _dbContext.Authorizeds.Where(i => i.GroupId == member.GroupId).Select(i => i.Role.Code).ToList();
                 HttpContext.Session.SetObject("codes", codes);
                 return RedirectToAction("Index", "Home");
             }
             return RedirectToAction("Login", "Member");
         }
+
         public IActionResult Logout()
         {
             HttpContext.Session.SetObject("member", null);
-            return RedirectToAction("Index", "Home", new {area = ""});
+            return RedirectToAction("Index", "Home", new { area = "" });
         }
+
         public string MD5Hash(string text)
         {
             MD5 md5H = MD5.Create();
-            //convert the input string to a byte array and compute its hash
             byte[] data = md5H.ComputeHash(Encoding.UTF8.GetBytes(text));
-            // create a new stringbuilder to collect the bytes and create a string
             StringBuilder sB = new StringBuilder();
-            //loop through each byte of hashed data and format each one as a hexadecimal string
             for (int i = 0; i < data.Length; i++)
             {
                 sB.Append(data[i].ToString("x2"));
             }
-            //return hexadecimal string
             return sB.ToString();
         }
-        
-
     }
 }

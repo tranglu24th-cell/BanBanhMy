@@ -17,7 +17,7 @@ namespace Web.Migrations
             migrationBuilder.AddColumn<string>(
                 name: "Email",
                 table: "Customer",
-                type: "nvarchar(max)",
+                type: "nvarchar(256)", // <-- ĐÃ SỬA: Thay nvarchar(max) thành nvarchar(256) ở đây
                 nullable: true);
 
             migrationBuilder.AddColumn<DateTime>(

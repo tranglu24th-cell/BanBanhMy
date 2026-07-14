@@ -115,6 +115,37 @@ namespace Web.Controllers
 
             return RedirectToAction("AdminBookingList");
         }
+        public async Task<IActionResult> GetHomeData()
+        {
+            // 1. Bánh hot tháng 7: Lấy các bánh được tạo trong năm 2026 và tháng 7, hoặc đơn giản là lấy các bánh mới nhất
+            var banhHotThang7 = await _dbContext.Products
+                .Where(p => p.CreatedOn.HasValue && p.CreatedOn.Value.Month == 7)
+                .Take(4)
+                .ToListAsync();
+
+            // Nếu dữ liệu test chưa có bánh tháng 7, bạn có thể dùng tạm dòng dưới này để lấy 4 bánh mới nhất:
+            // var banhHotThang7 = await _dbContext.Products.OrderByDescending(p => p.CreatedOn).Take(4).ToListAsync();
+
+            // 2. Bánh sắp ra mắt: Dựa theo trường IsComming trong model của bạn
+            var banhSapRaMat = await _dbContext.Products
+                .Where(p => p.IsComming == true)
+                .Take(4)
+                .ToListAsync();
+
+            // 3. Combo món mùa hè & Chương trình ưu đãi: Lọc các sản phẩm đang có chương trình Sale (IsSale == true) 
+            // hoặc tên tiêu đề có chữ "Combo"
+            var comboUuDai = await _dbContext.Products
+                .Where(p => p.IsSale == true || p.Title.Contains("Combo"))
+                .Take(3)
+                .ToListAsync();
+
+            // Truyền toàn bộ sang View bằng ViewBag
+            ViewBag.BanhHotThang7 = banhHotThang7;
+            ViewBag.BanhSapRaMat = banhSapRaMat;
+            ViewBag.ComboUuDai = comboUuDai;
+            await GetHomeData();
+            return View();
+        }
 
         public IActionResult Blog()
         {

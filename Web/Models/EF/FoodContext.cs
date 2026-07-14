@@ -137,6 +137,7 @@ namespace Web.Models.EF
         public DbSet<Order> Orders { get; set; }
         public DbSet<Details> Details { get; set; }
         public DbSet<Contact> Contacts { get; set; }
-        public DbSet<Booking> Bookings { get; set; } // Hoặc đặt tên là Booking tùy bạn, nhưng nên là Bookings
+        public DbSet<Booking> Bookings { get; set; }
+        public DbSet<User> Users { get; set; }
     }
 }

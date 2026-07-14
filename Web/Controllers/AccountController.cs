@@ -3,10 +3,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
 using System.Security.Claims;
-using System.Threading.Tasks;
 using Web.Models;
 using Web.Models.EF;
 
@@ -118,6 +115,7 @@ namespace Web.Controllers
             }
 
             await SignInCustomerAsync(customer);
+            HttpContext.Session.SetString("UserId", customer.Id.ToString());
 
             if (!string.IsNullOrEmpty(model.ReturnUrl) && Url.IsLocalUrl(model.ReturnUrl))
                 return Redirect(model.ReturnUrl);
@@ -183,6 +181,35 @@ namespace Web.Controllers
                 .ToListAsync();
 
             return View(orders);
+        }
+        // GET: /Account/Profile
+        [HttpGet]
+        public IActionResult Profile()
+        {
+            // 1. Lấy chuỗi ID từ Session
+            var userIdString = HttpContext.Session.GetString("UserId");
+
+            if (string.IsNullOrEmpty(userIdString))
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            // 2. Chuyển đổi sang dạng Guid
+            if (!Guid.TryParse(userIdString, out Guid userId))
+            {
+                return BadRequest("Định dạng ID người dùng không hợp lệ.");
+            }
+
+            // 3. Thay đổi truy vấn sang bảng Customers của bạn
+            var customer = _dbContext.Customers.FirstOrDefault(c => c.Id == userId);
+
+            if (customer == null)
+            {
+                return NotFound();
+            }
+
+            // 4. Truyền dữ liệu customer sang View
+            return View(customer);
         }
     }
 }

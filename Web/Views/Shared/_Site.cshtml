@@ -100,6 +100,11 @@
                                         <li><hr class="dropdown-divider"></li>
                                     }
                                     <li>
+                                        <a class="dropdown-item py-2" href="@Url.Action("Profile", "Account", new { area = "" })">
+                                            <i class="fas fa-user me-2 text-muted"></i>Thông tin cá nhân
+                                        </a>
+                                    </li>
+                                    <li>
                                         <a class="dropdown-item py-2 text-secondary" href="@Url.Action("Logout", "Account", new { area = "" })" onclick="return confirm('Bạn có chắc chắn muốn đăng xuất không?')">
                                             <i class="fas fa-sign-out-alt me-2"></i>Đăng xuất
                                         </a>

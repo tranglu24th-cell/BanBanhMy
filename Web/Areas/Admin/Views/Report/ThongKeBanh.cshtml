@@ -1,0 +1,56 @@
+﻿@model dynamic
+
+@{
+    ViewData["Title"] = "Thống kê số lượng bánh đã bán";
+    Layout = "~/Areas/Admin/Views/Shared/_Admin.cshtml";
+}
+
+<div class="container-fluid px-4 mt-4">
+    <div class="card mb-4 shadow">
+        <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+            <h5 class="mb-0"><i class="fas fa-chart-bar me-1"></i> Báo Cáo Số Lượng Bánh Đã Bán</h5>
+            <span class="badge bg-success">Dữ liệu thời gian thực</span>
+        </div>
+
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th style="width: 8%">STT</th>
+                            <th>Tên sản phẩm / Loại bánh</th>
+                            <th style="width: 25%" class="text-center">Tổng số lượng đã bán</th>
+                            <th style="width: 20%" class="text-center">Trạng thái</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            int stt = 1;
+                        }
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@stt</td>
+                                <td class="font-weight-bold text-secondary">@item.TenBanh</td>
+                                <td class="text-center font-weight-bold text-danger">
+                                    @item.SoLuongDaBan
+                                </td>
+                                <td class="text-center">
+                                    @if (item.SoLuongDaBan > 50)
+                                    {
+                                        <span class="badge bg-danger">🔥 Bán chạy</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">Ổn định</span>
+                                    }
+                                </td>
+                            </tr>
+                            stt++;
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

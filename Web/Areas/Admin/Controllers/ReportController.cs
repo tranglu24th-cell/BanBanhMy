@@ -35,5 +35,29 @@ namespace Web.Areas.Admin.Controllers
                         };
             return Ok(await items.OrderBy(p => p.Months).ToListAsync());
         }
+        [HttpGet]
+        public IActionResult ThongKeBanh()
+        {
+            var thongKeList = (from d in _dbContext.Details
+                               join p in _dbContext.Products on d.ProductId equals p.Id
+                               select new
+                               {
+                                   ProductId = d.ProductId,
+                                    
+                                   ProductName = p.Title,
+                                 
+                                   Amount = d.Amount
+                               })
+                               .GroupBy(x => new { x.ProductId, x.ProductName })
+                               .Select(g => new
+                               {
+                                   TenBanh = g.Key.ProductName,
+                                   SoLuongDaBan = g.Sum(x => x.Amount)
+                               })
+                               .OrderByDescending(x => x.SoLuongDaBan)
+                               .ToList();
+
+            return View(thongKeList);
+        }
     }
 }

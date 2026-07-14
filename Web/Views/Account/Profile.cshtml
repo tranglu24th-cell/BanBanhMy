@@ -1,0 +1,46 @@
+﻿@model Core.Database.Models.Customer
+
+@{
+    ViewData["Title"] = "Thông tin cá nhân";
+    Layout = "~/Views/Shared/_Site.cshtml";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white text-center">
+                    <h4 class="mb-0">Thông Tin Tài Khoản</h4>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3 row">
+                        <label class="col-sm-4 font-weight-bold">Tài khoản:</label>
+                        <div class="col-sm-8 text-primary font-weight-bold">@Model.LoginName</div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-4 font-weight-bold">Họ và tên:</label>
+                        <div class="col-sm-8">@Model.Name</div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-4 font-weight-bold">Số điện thoại:</label>
+                        <div class="col-sm-8">@Model.Phone</div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-4 font-weight-bold">Địa chỉ:</label>
+                        <div class="col-sm-8">@Model.Address</div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-4 font-weight-bold">Mã định danh (ID):</label>
+                        <div class="col-sm-8 text-muted" style="font-size: 0.85rem;">@Model.Id</div>
+                    </div>
+
+                    <hr />
+                    <p class="text-muted small text-center">Thông tin cá nhân được bảo mật trên hệ thống Old Mill.</p>
+                </div>
+                <div class="card-footer text-center">
+                    <a href="/" class="btn btn-secondary btn-sm">Quay lại trang chủ</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

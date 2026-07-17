@@ -3,3 +3,85 @@
     Layout = "~/Areas/Admin/Views/Shared/_Admin.cshtml";
 }
 
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="m-0 text-dark" style="font-weight: 600;">Trang Quản Trị</h1>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Nội dung hiển thị các ô thống kê -->
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+
+            <!-- Hộp 1: Sản phẩm bánh (Màu Xanh Dương) -->
+            <div class="col-lg-3 col-6">
+                <div class="small-box bg-info">
+                    <div class="inner">
+                        <h3>45</h3>
+                        <p>Món Bánh</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-birthday-cake"></i>
+                    </div>
+                    <a href="/Admin/Product" class="small-box-footer">
+                        Xem chi tiết <i class="fas fa-arrow-circle-right"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Hộp 2: Đơn hàng mới (Màu Xanh Lá) -->
+            <div class="col-lg-3 col-6">
+                <div class="small-box bg-success">
+                    <div class="inner">
+                        <h3>18</h3>
+                        <p>Đơn Hàng Mới</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-shopping-cart"></i>
+                    </div>
+                    <a href="/Admin/Order" class="small-box-footer">
+                        Xem chi tiết <i class="fas fa-arrow-circle-right"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Hộp 3: Khách hàng/Thành viên (Màu Vàng) -->
+            <div class="col-lg-3 col-6">
+                <div class="small-box bg-warning">
+                    <div class="inner" style="color: #fff !important;">
+                        <h3 style="color: #fff !important;">150</h3>
+                        <p style="color: #fff !important;">Thành Viên</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <a href="/Admin/Member" class="small-box-footer" style="color: #fff !important;">
+                        Xem chi tiết <i class="fas fa-arrow-circle-right" style="color: #fff !important;"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Hộp 4: Ý kiến/Liên hệ (Màu Đỏ) -->
+            <div class="col-lg-3 col-6">
+                <div class="small-box bg-danger">
+                    <div class="inner">
+                        <h3>9</h3>
+                        <p>Phản Hồi & Liên Hệ</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <a href="/Admin/Contact" class="small-box-footer">
+                        Xem chi tiết <i class="fas fa-arrow-circle-right"></i>
+                    </a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>

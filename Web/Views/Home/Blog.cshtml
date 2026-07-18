@@ -1,0 +1,37 @@
+﻿@model Core.Database.Models.Article
+@{
+    ViewData["Title"] = Model?.Title ?? "Chi tiết bài viết";
+    Layout = "~/Views/Shared/_Site.cshtml";
+}
+
+<div class="container my-5" style="max-width: 850px;">
+    <!-- Tiêu đề bài viết -->
+    <h1 class="font-weight-bold text-dark mb-3 text-center">@Model?.Title</h1>
+
+    <!-- Ngày đăng bài -->
+    <div class="text-muted mb-4 pb-2 border-bottom text-center">
+        <i class="far fa-calendar-alt me-1"></i>
+        Đăng ngày: @Model?.CreatedOn?.ToString("dd/MM/yyyy")
+    </div>
+
+    <!-- Ảnh minh họa bài viết -->
+    @if (!string.IsNullOrEmpty(Model?.Picture))
+    {
+        <div class="mb-4 text-center">
+           
+            <img src="@Model.Picture" class="img-fluid rounded shadow-sm w-100" style="max-height: 450px; object-fit: cover;" alt="@Model.Title" />
+        </div>
+    }
+
+    <!-- Nội dung chi tiết của bài viết -->
+    <div class="blog-content text-justify" style="font-size: 1.1rem; line-height: 1.8; color: #333;">
+        @Html.Raw(Model?.Content)
+    </div>
+
+    <!-- Nút quay lại -->
+    <div class="mt-5 border-top pt-4 text-center">
+        <a href="/" class="btn btn-outline-secondary px-4">
+            <i class="fas fa-arrow-left me-1"></i> Quay lại trang chủ
+        </a>
+    </div>
+</div>

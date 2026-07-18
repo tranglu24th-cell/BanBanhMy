@@ -1,4 +1,178 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿
+//using Microsoft.AspNetCore.Mvc;
+//using Microsoft.EntityFrameworkCore;
+//using Web.Models;
+//using Web.Models.EF;
+
+//namespace Web.Controllers
+//{
+//    public class HomeController : Controller
+//    {
+//        private readonly FoodContext _dbContext;
+//        public HomeController(FoodContext dbContext)
+//        { 
+//            _dbContext = dbContext;
+//        }
+
+
+//        public async Task<IActionResult> Index()
+//        {
+//            // 1. Phần lấy danh mục sản phẩm hiện tại của bạn (Dành cho Client)
+//            var adminCategoryNames = new List<string> { "Root", "Authorized", "Nhóm quyền", "Product", "Article" };
+
+//            ViewBag.Categories = await _dbContext.Categories
+//                .Where(c => !adminCategoryNames.Contains(c.Name))
+//                .ToListAsync();
+
+
+//            // 2. CHÈN THÊM DÒNG NÀY VÀO ĐÂY ĐỂ LẤY 3 BÀI VIẾT CHO CLIENT XEM
+//            ViewBag.LatestBlogs = await _dbContext.Articles
+//                .OrderByDescending(a => a.CreatedOn)
+//                .Take(3)
+//                .ToListAsync();
+
+
+//            return View();
+//        }
+//        public IActionResult About()
+//        {
+//            return View();
+//        }
+
+//        public IActionResult Services()
+//        {
+//            return View();
+//        }
+
+//        public IActionResult Menu()
+//        {
+//            return View();
+//        }
+
+//        [HttpGet]
+//        public IActionResult Booking()
+//        {
+//            // Lấy danh sách lịch đặt đã được duyệt hoặc tất cả để hiển thị công khai ngoài trang web
+//            var approvedBookings = _dbContext.Bookings
+//                                          .OrderByDescending(b => b.CreatedAt)
+//                                          .ToList();
+
+//            ViewBag.ApprovedBookings = approvedBookings;
+//            return View();
+//        }
+
+//        // 4. Hàm xử lý Nhận thông tin từ Form gửi lên và lưu cứng vào DB
+//        [HttpPost]
+//        [ValidateAntiForgeryToken]
+//        public IActionResult CreateBooking(Booking model)
+//        {
+//            if (ModelState.IsValid)
+//            {
+//                // Gán các giá trị mặc định cho đơn mới
+//                model.CreatedAt = DateTime.Now;
+//                model.Status = "Chờ duyệt";
+
+//                // Lệnh lưu trực tiếp vào bảng Bookings trong Database
+//                _dbContext.Bookings.Add(model);
+//                _dbContext.SaveChanges(); // Xác nhận lưu thay đổi xuống SQL
+
+//                TempData["SuccessMessage"] = "Đặt lịch thành công! Vui lòng đợi Admin duyệt và phản hồi.";
+//                return RedirectToAction("Booking");
+//            }
+
+//            // Nếu form lỗi, lấy lại danh sách cũ để hiển thị lại khung bên phải không bị trống
+//            ViewBag.ApprovedBookings = _dbContext.Bookings.OrderByDescending(b => b.CreatedAt).ToList();
+//            return View("Booking", model);
+//        }
+//        // ==================== KHU VỰC DÀNH CHO ADMIN ====================
+
+//        // 1. Trang hiển thị danh sách tất cả các lịch đặt bánh của khách gửi về
+//        [HttpGet]
+//        public IActionResult AdminBookingList()
+//        {
+//            // Lấy toàn bộ danh sách đặt lịch từ Database, đơn mới nhất xếp lên đầu
+//            var allBookings = _dbContext.Bookings.OrderByDescending(b => b.CreatedAt).ToList();
+
+//            // Trả dữ liệu ra cho giao diện Admin xem
+//            return View(allBookings);
+//        }
+
+//        // 2. Xử lý khi Admin gõ câu trả lời và bấm nút "Cập nhật / Phản hồi"
+//        [HttpPost]
+//        [ValidateAntiForgeryToken]
+//        public IActionResult AdminReplyBooking(int bookingId, string adminComment, string newStatus)
+//        {
+//            // Tìm đúng đơn đặt lịch của khách trong Database dựa vào Id
+//            var booking = _dbContext.Bookings.FirstOrDefault(b => b.Id == bookingId);
+
+//            if (booking != null)
+//            {
+//                booking.AdminReply = adminComment;    // Lưu câu trả lời của bạn
+//                booking.Status = newStatus;            // Đổi trạng thái (Đã xác nhận / Từ chối)
+
+//                _dbContext.SaveChanges();              // Lưu trực tiếp xuống Database
+//                TempData["AdminSuccess"] = "Cập nhật trạng thái đơn thành công!";
+//            }
+
+//            return RedirectToAction("AdminBookingList");
+//        }
+//        public async Task<IActionResult> GetHomeData()
+//        {
+//            // 1. Bánh hot tháng 7: Lấy các bánh được tạo trong năm 2026 và tháng 7, hoặc đơn giản là lấy các bánh mới nhất
+//            var banhHotThang7 = await _dbContext.Products
+//                .Where(p => p.CreatedOn.HasValue && p.CreatedOn.Value.Month == 7)
+//                .Take(4)
+//                .ToListAsync();
+
+//            // Nếu dữ liệu test chưa có bánh tháng 7, bạn có thể dùng tạm dòng dưới này để lấy 4 bánh mới nhất:
+//            // var banhHotThang7 = await _dbContext.Products.OrderByDescending(p => p.CreatedOn).Take(4).ToListAsync();
+
+//            // 2. Bánh sắp ra mắt: Dựa theo trường IsComming trong model của bạn
+//            var banhSapRaMat = await _dbContext.Products
+//                .Where(p => p.IsComming == true)
+//                .Take(4)
+//                .ToListAsync();
+
+//            // 3. Combo món mùa hè & Chương trình ưu đãi: Lọc các sản phẩm đang có chương trình Sale (IsSale == true) 
+//            // hoặc tên tiêu đề có chữ "Combo"
+//            var comboUuDai = await _dbContext.Products
+//                .Where(p => p.IsSale == true || p.Title.Contains("Combo"))
+//                .Take(3)
+//                .ToListAsync();
+
+//            // Truyền toàn bộ sang View bằng ViewBag
+//            ViewBag.BanhHotThang7 = banhHotThang7;
+//            ViewBag.BanhSapRaMat = banhSapRaMat;
+//            ViewBag.ComboUuDai = comboUuDai;
+//            await GetHomeData();
+//            return View();
+//        }
+
+//        [HttpGet]
+//        [Route("Home/BlogDetail/{id}")]
+//        public IActionResult BlogDetail(Guid id)
+//        {
+//            // Đổi _dbContext.Blogs thành _dbContext.Articles để đồng bộ với trang chủ
+//            var newsItem = _dbContext.Articles.FirstOrDefault(n => n.Id == id);
+
+//            if (newsItem == null)
+//            {
+//                return NotFound();
+//            }
+
+//            return View("Blog", newsItem);
+//        }
+
+
+//        public IActionResult Error404()
+//        {
+//            return View();
+//        }
+
+
+//    }
+//}
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Web.Models;
 using Web.Models.EF;
@@ -9,30 +183,55 @@ namespace Web.Controllers
     {
         private readonly FoodContext _dbContext;
         public HomeController(FoodContext dbContext)
-        { 
+        {
             _dbContext = dbContext;
         }
 
-
+        // TRANG CHỦ: Tự động gom hết mọi dữ liệu hiển thị ra ngoài Client tại đây
         public async Task<IActionResult> Index()
         {
-            // 1. Phần lấy danh mục sản phẩm hiện tại của bạn (Dành cho Client)
+            // 1. Lấy danh mục sản phẩm loại trừ nhóm Admin
             var adminCategoryNames = new List<string> { "Root", "Authorized", "Nhóm quyền", "Product", "Article" };
-
             ViewBag.Categories = await _dbContext.Categories
                 .Where(c => !adminCategoryNames.Contains(c.Name))
                 .ToListAsync();
 
-
-            // 2. CHÈN THÊM DÒNG NÀY VÀO ĐÂY ĐỂ LẤY 3 BÀI VIẾT CHO CLIENT XEM
+            // 2. Lấy 3 bài viết (Tin tức/Blog) mới nhất hiển thị tự động
             ViewBag.LatestBlogs = await _dbContext.Articles
                 .OrderByDescending(a => a.CreatedOn)
                 .Take(3)
                 .ToListAsync();
 
+            // 3. Bánh hot tháng 7: Lấy các bánh tạo vào tháng 7/2026, hoặc lấy 4 bánh mới nhất làm dự phòng
+            var banhHotThang7 = await _dbContext.Products
+                .Where(p => p.CreatedOn.HasValue && p.CreatedOn.Value.Month == 7)
+                .Take(4)
+                .ToListAsync();
+
+            if (!banhHotThang7.Any()) // Nếu chưa có bánh tháng 7, tự động bốc 4 bánh mới nhất
+            {
+                banhHotThang7 = await _dbContext.Products
+                    .OrderByDescending(p => p.CreatedOn)
+                    .Take(4)
+                    .ToListAsync();
+            }
+            ViewBag.BanhHotThang7 = banhHotThang7;
+
+            // 4. Bánh sắp ra mắt (IsComming == true)
+            ViewBag.BanhSapRaMat = await _dbContext.Products
+                .Where(p => p.IsComming == true)
+                .Take(4)
+                .ToListAsync();
+
+            // 5. Combo món mùa hè & Ưu đãi (IsSale == true hoặc Tên chứa chữ Combo)
+            ViewBag.ComboUuDai = await _dbContext.Products
+                .Where(p => p.IsSale == true || p.Title.Contains("Combo"))
+                .Take(3)
+                .ToListAsync();
 
             return View();
         }
+
         public IActionResult About()
         {
             return View();
@@ -51,119 +250,79 @@ namespace Web.Controllers
         [HttpGet]
         public IActionResult Booking()
         {
-            // Lấy danh sách lịch đặt đã được duyệt hoặc tất cả để hiển thị công khai ngoài trang web
             var approvedBookings = _dbContext.Bookings
-                                          .OrderByDescending(b => b.CreatedAt)
-                                          .ToList();
+                .OrderByDescending(b => b.CreatedAt)
+                .ToList();
 
             ViewBag.ApprovedBookings = approvedBookings;
             return View();
         }
 
-        // 4. Hàm xử lý Nhận thông tin từ Form gửi lên và lưu cứng vào DB
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult CreateBooking(Booking model)
         {
             if (ModelState.IsValid)
             {
-                // Gán các giá trị mặc định cho đơn mới
                 model.CreatedAt = DateTime.Now;
                 model.Status = "Chờ duyệt";
 
-                // Lệnh lưu trực tiếp vào bảng Bookings trong Database
                 _dbContext.Bookings.Add(model);
-                _dbContext.SaveChanges(); // Xác nhận lưu thay đổi xuống SQL
+                _dbContext.SaveChanges();
 
                 TempData["SuccessMessage"] = "Đặt lịch thành công! Vui lòng đợi Admin duyệt và phản hồi.";
                 return RedirectToAction("Booking");
             }
 
-            // Nếu form lỗi, lấy lại danh sách cũ để hiển thị lại khung bên phải không bị trống
             ViewBag.ApprovedBookings = _dbContext.Bookings.OrderByDescending(b => b.CreatedAt).ToList();
             return View("Booking", model);
         }
+
         // ==================== KHU VỰC DÀNH CHO ADMIN ====================
 
-        // 1. Trang hiển thị danh sách tất cả các lịch đặt bánh của khách gửi về
         [HttpGet]
         public IActionResult AdminBookingList()
         {
-            // Lấy toàn bộ danh sách đặt lịch từ Database, đơn mới nhất xếp lên đầu
             var allBookings = _dbContext.Bookings.OrderByDescending(b => b.CreatedAt).ToList();
-
-            // Trả dữ liệu ra cho giao diện Admin xem
             return View(allBookings);
         }
 
-        // 2. Xử lý khi Admin gõ câu trả lời và bấm nút "Cập nhật / Phản hồi"
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult AdminReplyBooking(int bookingId, string adminComment, string newStatus)
         {
-            // Tìm đúng đơn đặt lịch của khách trong Database dựa vào Id
             var booking = _dbContext.Bookings.FirstOrDefault(b => b.Id == bookingId);
 
             if (booking != null)
             {
-                booking.AdminReply = adminComment;    // Lưu câu trả lời của bạn
-                booking.Status = newStatus;            // Đổi trạng thái (Đã xác nhận / Từ chối)
+                booking.AdminReply = adminComment;
+                booking.Status = newStatus;
 
-                _dbContext.SaveChanges();              // Lưu trực tiếp xuống Database
+                _dbContext.SaveChanges();
                 TempData["AdminSuccess"] = "Cập nhật trạng thái đơn thành công!";
             }
 
             return RedirectToAction("AdminBookingList");
         }
-        public async Task<IActionResult> GetHomeData()
+
+        // XEM CHI TIẾT BÀI VIẾT: Đồng bộ 100% với bảng Articles ngoài trang chủ
+        [HttpGet]
+        [Route("Home/BlogDetail/{id}")]
+        public IActionResult BlogDetail(Guid id)
         {
-            // 1. Bánh hot tháng 7: Lấy các bánh được tạo trong năm 2026 và tháng 7, hoặc đơn giản là lấy các bánh mới nhất
-            var banhHotThang7 = await _dbContext.Products
-                .Where(p => p.CreatedOn.HasValue && p.CreatedOn.Value.Month == 7)
-                .Take(4)
-                .ToListAsync();
+            var newsItem = _dbContext.Articles.FirstOrDefault(n => n.Id == id);
 
-            // Nếu dữ liệu test chưa có bánh tháng 7, bạn có thể dùng tạm dòng dưới này để lấy 4 bánh mới nhất:
-            // var banhHotThang7 = await _dbContext.Products.OrderByDescending(p => p.CreatedOn).Take(4).ToListAsync();
+            if (newsItem == null)
+            {
+                return NotFound();
+            }
 
-            // 2. Bánh sắp ra mắt: Dựa theo trường IsComming trong model của bạn
-            var banhSapRaMat = await _dbContext.Products
-                .Where(p => p.IsComming == true)
-                .Take(4)
-                .ToListAsync();
-
-            // 3. Combo món mùa hè & Chương trình ưu đãi: Lọc các sản phẩm đang có chương trình Sale (IsSale == true) 
-            // hoặc tên tiêu đề có chữ "Combo"
-            var comboUuDai = await _dbContext.Products
-                .Where(p => p.IsSale == true || p.Title.Contains("Combo"))
-                .Take(3)
-                .ToListAsync();
-
-            // Truyền toàn bộ sang View bằng ViewBag
-            ViewBag.BanhHotThang7 = banhHotThang7;
-            ViewBag.BanhSapRaMat = banhSapRaMat;
-            ViewBag.ComboUuDai = comboUuDai;
-            await GetHomeData();
-            return View();
+            return View("Blog", newsItem);
         }
-
-        public IActionResult Blog()
-        {
-            return View();
-        }
-
-        public IActionResult Team()
-        {
-            return View();
-        }
-
-       
 
         public IActionResult Error404()
         {
             return View();
         }
-
-
     }
 }

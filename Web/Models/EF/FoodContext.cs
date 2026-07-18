@@ -1,6 +1,7 @@
 ﻿using Core.Database.Models;
 using Microsoft.EntityFrameworkCore;
-
+using System.Reflection.Metadata;
+using Web.Models.EF;
 namespace Web.Models.EF
 {
     public class FoodContext: DbContext
@@ -139,5 +140,6 @@ namespace Web.Models.EF
         public DbSet<Contact> Contacts { get; set; }
         public DbSet<Booking> Bookings { get; set; }
         public DbSet<User> Users { get; set; }
+        public DbSet<Core.Database.Models.Blog> Blogs { get; set; }
     }
 }

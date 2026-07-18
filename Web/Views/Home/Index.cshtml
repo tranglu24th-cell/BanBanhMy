@@ -402,8 +402,8 @@
                                 <p class="text-muted" style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; min-height: 72px; font-size: 14px;">
                                     @item.Description
                                 </p>
-                                <a class="text-uppercase fw-bold text-decoration-none" href="/Home/BlogDetail/@item.Id" style="color: #bfa37a; font-size: 13px;">
-                                    Đọc tiếp <i class="bi bi-arrow-right ms-1"></i>
+                                <a asp-controller="Home" asp-action="BlogDetail" asp-route-id="@item.Id" class="text-decoration-none">
+                                    ĐỌC TIẾP <i class="fas fa-arrow-right"></i>
                                 </a>
                             </div>
 
@@ -420,57 +420,9 @@
         </div>
     </div>
 </div>
-<div class="container mt-5">
-    <h2 class="text-center mb-4 text-danger font-weight-bold" style="font-weight: 700;">🔥 BÁNH HOT THÁNG 7 🔥</h2>
-    <div class="row">
-        @if (ViewBag.BanhHotThang7 != null && ((List<Core.Database.Models.Product>)ViewBag.BanhHotThang7).Any())
-        {
-            foreach (var item in ViewBag.BanhHotThang7)
-            {
-                <div class="col-md-3 mb-4">
-                    <div class="card h-100 shadow-sm border-0 position-relative">
-                        <span class="badge bg-danger position-absolute top-0 start-0 m-2 text-white">HOT</span>
-                        <img src="~/images/@item.Picture" class="card-img-top" alt="@item.Title" style="height: 200px; object-fit: cover;" onerror="this.src='/images/default-cake.jpg'">
-                        <div class="card-body text-center">
-                            <h5 class="card-title font-weight-bold text-dark text-truncate">@item.Title</h5>
-                            <p class="card-text text-danger font-weight-bold">@item.Price.ToString("#,##0") đ</p>
-                            <a href="/Product/Detail/@item.Id" class="btn btn-outline-danger btn-sm w-100">Xem chi tiết</a>
-                        </div>
-                    </div>
-                </div>
-            }
-        }
-        else
-        {
-            <div class="col-12 text-center text-muted"><p>Chưa có sản phẩm hot trong tháng này.</p></div>
-        }
-    </div>
-</div>
 
-<div class="container mt-5">
-    <h2 class="text-center mb-4 text-warning font-weight-bold" style="font-weight: 700;">✨ BÁNH SẮP RA MẮT ✨</h2>
-    <div class="row">
-        @if (ViewBag.BanhSapRaMat != null && ((List<Core.Database.Models.Product>)ViewBag.BanhSapRaMat).Any())
-        {
-            foreach (var item in ViewBag.BanhSapRaMat)
-            {
-                <div class="col-md-3 mb-4">
-                    <div class="card h-100 shadow-sm border-0 opacity-75">
-                        <img src="~/images/@item.Picture" class="card-img-top" alt="@item.Title" style="height: 200px; object-fit: cover; filter: grayscale(30%);" onerror="this.src='/images/default-cake.jpg'">
-                        <div class="card-body text-center bg-light">
-                            <h5 class="card-title text-muted text-truncate">@item.Title</h5>
-                            <span class="badge bg-warning text-dark px-3 py-2">Coming Soon</span>
-                        </div>
-                    </div>
-                </div>
-            }
-        }
-        else
-        {
-            <div class="col-12 text-center text-muted"><p>Không có sản phẩm nào sắp ra mắt.</p></div>
-        }
-    </div>
-</div>
+
+
 
 
 
